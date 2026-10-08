@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>라브 플레이리스트 위젯 코드 생성기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="top-text">
+    <h1>라브 플레이리스트 코드 생성기 ver. 1.0.0</h1>
+    <p>정보를 입력하면 오른쪽에 미리보기가 뜨고, 아래 코드 상자에 그대로 복사해서 쓸 수 있는 HTML 코드가 생성됩니다.</br>(모바일 등 화면이 작은 경우에는 하단에 미리보기 창이 나타납니다.)</br>곡이 끝나면 다음 곡으로 자동 재생되고, 입력한 내용은 기기에 저장돼서 나중에 이어서 편집할 수 있어요.</br>브라우저의 자동재생 정책에 따라 곡이 바뀔 때 소리가 잠깐 끊기거나 재생이 멈출 수 있습니다.</p>
+  </div>
+  <div class="top-actions">
+    <button class="btn danger-solid" id="resetAllBtn">전체 데이터 초기화</button>
+    <span class="save-status mono" id="saveStatus"></span>
+  </div>
+</header>
+
+<div class="layout">
+
+  <div class="builder">
+
+    <section class="block">
+      <h2><span class="num">01</span> 플레이리스트 정보</h2>
+      <label class="field">
+        <span class="lbl">커버 이미지</span>
+        <div class="upload-row">
+          <input type="text" id="playlistCover" placeholder="이미지 URL을 입력하거나 파일을 선택하세요">
+          <button class="btn file-btn small">파일 선택<input type="file" accept="image/*" id="playlistCoverFile"></button>
+        </div>
+        <div class="seg-group">
+          <label><input type="radio" name="coverEmptyMode" value="title" checked> 이미지 없으면 제목으로 표시</label>
+          <label><input type="radio" name="coverEmptyMode" value="hide"> 이미지 없으면 영역 숨기기</label>
+        </div>
+      </label>
+      <label class="field">
+        <span class="lbl">플레이리스트 제목</span>
+        <input type="text" id="playlistTitle" placeholder="플레이리스트 제목 입력">
+      </label>
+      <label class="field">
+        <span class="lbl">설명</span>
+        <input type="text" id="playlistDesc" placeholder="플레이리스트 설명, 이미지 출처, 커미션주 아이디 등…">
+      </label>
+    </section>
+
+    <section class="block">
+      <h2><span class="num">02</span> 곡 목록</h2>
+      <div id="songList"></div>
+      <button class="add-song-btn" id="addSongBtn">+ 곡 추가</button>
+      <p class="helper">유튜브 링크를 넣고 <b>정보 가져오기</b>를 누르면 제목·가수·썸네일이 자동으로 채워집니다. 재생 길이는 원하실 경우 직접 입력해주세요.</br>자동으로 채워진 값에 오류가 있을 경우 직접 수정해주세요.</p>
+    </section>
+
+    <section class="block">
+      <h2><span class="num">03</span> 표시 옵션</h2>
+      <label class="field" style="max-width:220px;">
+        <span class="lbl">처음에 보여줄 곡 수</span>
+        <input type="number" id="visibleCount" value="3" min="1">
+      </label>
+      <p class="helper">이 숫자를 넘는 곡은 <b>더보기</b>를 누르면 아래로 펼쳐집니다.</p>
+    </section>
+
+    <section class="block">
+      <h2><span class="num">04</span> 색상</h2>
+      <div class="color-grid">
+        <div class="color-item"><span class="lbl">배경색</span><input type="color" id="colorBg" value="#ffffff"><span class="hex" id="hexBg">#ffffff</span></div>
+        <div class="color-item"><span class="lbl">제목·곡 글자색</span><input type="color" id="colorText" value="#26241c"><span class="hex" id="hexText">#666666</span></div>
+        <div class="color-item"><span class="lbl">설명·부가정보색</span><input type="color" id="colorSub" value="#8b8577"><span class="hex" id="hexSub">#bac0c6</span></div>
+        <div class="color-item"><span class="lbl">포인트색</span><input type="color" id="colorAccent" value="#4b9c94"><span class="hex" id="hexAccent">#b8d0e6</span></div>
+      </div>
+      <button class="btn ghost reset-colors" id="resetColorsBtn">기본 색상으로 되돌리기</button>
+    </section>
+
+  </div>
+
+  <div class="preview-col">
+   <div class="preview-col-inner">
+    <section class="block">
+      <h2>미리보기</h2>
+      <div class="preview-frame-wrap"><iframe id="previewFrame" title="preview"></iframe></div>
+    </section>
+
+    <section class="block">
+      <div class="output-head">
+        <h2 style="margin-bottom:0;">생성된 코드</h2>
+        <button class="btn primary small" id="copyBtn">코드 복사</button>
+      </div>
+      <textarea id="outputCode" readonly></textarea>
+      <p class="helper">복사한 코드를 티스토리·네이버 블로그·갠홈 등… <b>HTML 편집 모드</b>에서 그대로 붙여넣으면 됩니다.</br>코드를 HTML 편집 모드에서 붙여넣은 후, 다른 에디터로 전환할 경우 형태가 일그러질 수 있습니다.</p>
+    </section>
+   </div>
+  </div>
+
+</div>
+
+<footer class="site-footer">
+  <p>Made by <strong><a href="https://x.com/PL4NET_0F_LAIVE" target="_blank" rel="noopener">@PL4NET_0F_LAIVE</a></strong></p>
+</footer>
+
+<script src="script.js"></script>
+
+</body>
+</html>
